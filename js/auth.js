@@ -13,10 +13,12 @@ if (registerForm) {
     const submitBtn = registerForm.querySelector('button[type="submit"]');
     const alertBox = document.getElementById("alertMessage");
 
-    // Sakrij prethodne poruke
-    alertBox.style.display = "none";
-    alertBox.className = ""; // Resetuj klase
-    alertBox.innerHTML = "";
+    // Sakrij prethodne poruke o greškama (ako ih ima)
+    if (alertBox) {
+      alertBox.style.display = "none";
+      alertBox.className = "";
+      alertBox.innerHTML = "";
+    }
 
     // Disable dugme da ne moze da klikne dvaput
     submitBtn.disabled = true;
@@ -56,31 +58,33 @@ if (registerForm) {
       });
 
       if (response.ok) {
-        // --- USPEH ---
-        const message = await response.text();
-        showAlert(
-          message + " <br><strong>Redirecting to login...</strong>",
-          "success",
-        );
+        // --- USPEH (GLAVNA IZMENA OVDE) ---
+
+        // 1. Sakrij samu formu (da ne zbunjujemo korisnika)
+        registerForm.style.display = "none";
+
+        // 2. Prikaži onaj novi div sa porukom o emailu (koji smo dodali u HTML)
+        const successMessageDiv = document.getElementById("successMessage");
+        if (successMessageDiv) {
+          successMessageDiv.style.display = "block";
+        }
+
+        // 3. Opciono: Resetuj formu
         registerForm.reset();
 
-        // Dugme ostaje disabled (korisnik je gotov)
-        submitBtn.innerText = "Success!";
-
-        // 4. REDIREKCIJA NAKON 2 SEKUNDE
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 4000);
+        // BITNO: Ovde smo UKLONILI setTimeout i window.location.href!
+        // Sada korisnik ostaje na ovoj stranici i gleda poruku "Proverite email".
       } else {
         // --- GREŠKA SA SERVERA ---
-        const errorData = await response.json().catch(() => null);
-        let errorMessage = "Registration failed.";
-        if (errorData && errorData.error) {
-          errorMessage = errorData.error;
-        } else if (errorData) {
-          errorMessage = Object.values(errorData).join(", ");
-        }
-        showAlert(errorMessage, "danger");
+        const message = await response.text();
+        // Backend verovatno vraća samo tekst, ali za svaki slučaj hvatamo i JSON ako promeniš backend
+        let finalMsg = message;
+        try {
+          const jsonErr = JSON.parse(message);
+          if (jsonErr.message) finalMsg = jsonErr.message;
+        } catch (e) {}
+
+        showAlert("Registration failed: " + finalMsg, "danger");
 
         // Vrati dugme u normalu da moze da proba ponovo
         submitBtn.disabled = false;
@@ -98,71 +102,62 @@ if (registerForm) {
   });
 }
 
-// --- NOVA FUNKCIJA ZA VALIDACIJU (Tacka 2.18) ---
+// --- FUNKCIJA ZA VALIDACIJU ---
 function validateRegistrationData(data) {
-  // 1. Whitelisting za Username (Samo slova i brojevi, bez specijalnih znakova)
-  // Ovo direktno sprecava XSS i SQL Injection karaktere u username-u
   const usernameRegex = /^[a-zA-Z0-9]+$/;
   if (!usernameRegex.test(data.username)) {
-    return "Username must contain only letters and numbers (No special characters allowed).";
+    return "Username must contain only letters and numbers (No special characters).";
   }
-  // Boundary checking (3-20)
   if (data.username.length < 3 || data.username.length > 20) {
     return "Username must be between 3 and 20 characters.";
   }
 
-  // 2. Whitelisting za Ime i Prezime (Samo slova i razmaci)
   const nameRegex = /^[a-zA-Z\sčćđšžČĆĐŠŽ]+$/;
   if (!nameRegex.test(data.firstName)) {
     return "First name must contain only letters.";
   }
-
   if (data.firstName.length < 2 || data.firstName.length > 20) {
-    return "First name must be in between 2 and 20 characters.";
+    return "First name must be between 2 and 20 characters.";
   }
-
   if (!nameRegex.test(data.lastName)) {
     return "Last name must contain only letters.";
   }
-
   if (data.lastName.length < 2 || data.lastName.length > 20) {
-    return "Last name must be in between 2 and 20 characters.";
+    return "Last name must be between 2 and 20 characters.";
   }
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(data.email)) {
-    return "Invalid email format. Must contain '@' and domain (e.g. .com).";
+    return "Invalid email format.";
   }
 
-  // 3. Numeric & Boundary Validation za Godine
   const age = parseInt(data.age);
   if (isNaN(age) || age < 7 || age > 120) {
     return "You must be between 7 and 120 years old.";
   }
 
-  // 4. Password Policy (Regex) - Mora da se poklapa sa Backend pravilima
-  // Min 8 chars, 1 Upper, 1 Lower, 1 Digit, 1 Special
   const passwordRegex =
     /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$/;
   if (!passwordRegex.test(data.password)) {
-    return "Password is too weak! Must have 8+ chars, 1 Uppercase, 1 Lowercase, 1 Digit, and 1 Special char.";
+    return "Password too weak! Needs 8+ chars, Uppercase, Lowercase, Digit, Special char.";
   }
 
-  // 5. Provera jednakosti lozinki
   if (data.password !== data.repeatedPassword) {
     return "Passwords do not match!";
   }
 
-  return null; // Nema greske
+  return null;
 }
 
 function showAlert(message, type) {
   const alertBox = document.getElementById("alertMessage");
-  alertBox.style.display = "block";
-  alertBox.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
+  if (alertBox) {
+    alertBox.style.display = "block";
+    alertBox.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+  }
 }
