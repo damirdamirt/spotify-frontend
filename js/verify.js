@@ -1,5 +1,7 @@
 // js/verify.js
 
+checkAuthStatus();
+
 const API_URL = "http://localhost:8080/api/auth";
 
 document.addEventListener("DOMContentLoaded", async () => {

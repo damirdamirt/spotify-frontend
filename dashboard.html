@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spotify Clone - Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav
+      class="navbar navbar-dark bg-dark px-4 py-3 border-bottom border-secondary"
+    >
+      <a class="navbar-brand fw-bold text-success" href="#">Spotify Clone</a>
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-white" id="welcomeUser">Welcome!</span>
+        <button onclick="logout()" class="btn btn-outline-light btn-sm">
+          Logout
+        </button>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-12">
+          <h1 class="text-white mb-4">Dashboard</h1>
+
+          <div class="card bg-dark text-white border-secondary mb-4">
+            <div class="card-header border-secondary">
+              Backend Connection Test
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Secured Data from Spring Boot</h5>
+              <p class="card-text text-muted">
+                Testing endpoint: <code>/api/demo</code>
+              </p>
+
+              <div id="backendResponse" class="alert alert-secondary">
+                Waiting for JS...
+              </div>
+
+              <button onclick="testSecureData()" class="btn btn-success btn-sm">
+                Refresh Data
+              </button>
+            </div>
+          </div>
+
+          <div class="text-white">
+            <p>More content coming soon...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/utils.js"></script>
+
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>

@@ -1,26 +1,22 @@
-// URL Backenda
-const API_URL = "http://localhost:8080/api/auth";
+// js/register.js
 
-// Selektujemo formu
+checkAuthStatus();
+
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // 0. UX POBOLJŠANJA - POČETAK PROCESA
-    // Selektujemo dugme i Alert box
     const submitBtn = registerForm.querySelector('button[type="submit"]');
     const alertBox = document.getElementById("alertMessage");
 
-    // Sakrij prethodne poruke o greškama (ako ih ima)
+    // Reset UI
     if (alertBox) {
       alertBox.style.display = "none";
-      alertBox.className = "";
       alertBox.innerHTML = "";
     }
 
-    // Disable dugme da ne moze da klikne dvaput
     submitBtn.disabled = true;
     const originalBtnText = submitBtn.innerText;
     submitBtn.innerText = "Processing...";
@@ -39,8 +35,7 @@ if (registerForm) {
     // 2. VALIDACIJA
     const validationError = validateRegistrationData(formData);
     if (validationError) {
-      showAlert(validationError, "danger");
-      // Vrati dugme u normalu jer je doslo do greske
+      showAlert(validationError, "danger"); // Koristi funkciju iz utils.js
       submitBtn.disabled = false;
       submitBtn.innerText = originalBtnText;
       return;
@@ -58,26 +53,14 @@ if (registerForm) {
       });
 
       if (response.ok) {
-        // --- USPEH (GLAVNA IZMENA OVDE) ---
-
-        // 1. Sakrij samu formu (da ne zbunjujemo korisnika)
+        // --- USPEH ---
         registerForm.style.display = "none";
-
-        // 2. Prikaži onaj novi div sa porukom o emailu (koji smo dodali u HTML)
         const successMessageDiv = document.getElementById("successMessage");
-        if (successMessageDiv) {
-          successMessageDiv.style.display = "block";
-        }
-
-        // 3. Opciono: Resetuj formu
+        if (successMessageDiv) successMessageDiv.style.display = "block";
         registerForm.reset();
-
-        // BITNO: Ovde smo UKLONILI setTimeout i window.location.href!
-        // Sada korisnik ostaje na ovoj stranici i gleda poruku "Proverite email".
       } else {
-        // --- GREŠKA SA SERVERA ---
+        // --- GREŠKA ---
         const message = await response.text();
-        // Backend verovatno vraća samo tekst, ali za svaki slučaj hvatamo i JSON ako promeniš backend
         let finalMsg = message;
         try {
           const jsonErr = JSON.parse(message);
@@ -85,17 +68,12 @@ if (registerForm) {
         } catch (e) {}
 
         showAlert("Registration failed: " + finalMsg, "danger");
-
-        // Vrati dugme u normalu da moze da proba ponovo
         submitBtn.disabled = false;
         submitBtn.innerText = originalBtnText;
       }
     } catch (error) {
-      // --- MREŽNA GREŠKA ---
       console.error("Error:", error);
-      showAlert("Server is unreachable. Is backend running?", "danger");
-
-      // Vrati dugme u normalu
+      showAlert("Server is unreachable.", "danger");
       submitBtn.disabled = false;
       submitBtn.innerText = originalBtnText;
     }
@@ -136,10 +114,18 @@ function validateRegistrationData(data) {
     return "You must be between 7 and 120 years old.";
   }
 
+  if (data.password.length > 100) {
+    return "Password is too long! Max 100 characters allowed.";
+  }
+
   const passwordRegex =
     /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$/;
   if (!passwordRegex.test(data.password)) {
     return "Password too weak! Needs 8+ chars, Uppercase, Lowercase, Digit, Special char.";
+  }
+
+  if (data.repeatedPassword.length > 100) {
+    return "Repeated password is too long! Max 100 characters allowed.";
   }
 
   if (data.password !== data.repeatedPassword) {
@@ -147,17 +133,4 @@ function validateRegistrationData(data) {
   }
 
   return null;
-}
-
-function showAlert(message, type) {
-  const alertBox = document.getElementById("alertMessage");
-  if (alertBox) {
-    alertBox.style.display = "block";
-    alertBox.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
-  }
 }
