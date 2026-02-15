@@ -43,22 +43,31 @@ function checkAuthStatus() {
     pathname === "/" ||
     pathname.endsWith("/");
   const isRegisterPage = fullUrl.includes("register.html");
-  const isVerifyPage = fullUrl.includes("verify.html"); // <--- OVO JE BITNO
+  const isVerifyPage = fullUrl.includes("verify.html");
+  const isForgotPasswordPage = fullUrl.includes("forgot-password.html");
+  const isMagicLoginPage = fullUrl.includes("magic-login.html");
 
-  // 1. SCENARIO: Korisnik je ULOGOVAN
+  const isPublicPage =
+    isLoginPage ||
+    isRegisterPage ||
+    isVerifyPage ||
+    isForgotPasswordPage ||
+    isMagicLoginPage;
+
+  // SCENARIO 1: Ulogovan sam (imam token)
   if (token) {
-    // Ako pokusa da ode na Login, Register ili Verify -> MARŠ NA DASHBOARD
-    if (isLoginPage || isRegisterPage || isVerifyPage) {
-      console.log("Vec si ulogovan! Prebacujem na Dashboard.");
+    // Ako sam ulogovan, a hocu na javnu stranicu -> Salji na Dashboard
+    if (isPublicPage) {
+      console.log("Već sam ulogovan! Prebacujem na Dashboard.");
       window.location.href = "dashboard.html";
-      return; // Obavezno return da prekine dalje izvrsavanje
+      return;
     }
   }
-  // 2. SCENARIO: Korisnik NIJE ULOGOVAN
+  // SCENARIO 2: Nisam ulogovan (nemam token)
   else {
-    // Ako pokusa da ode na Dashboard (bilo sta sto NIJE javna stranica)
-    if (!isLoginPage && !isRegisterPage && !isVerifyPage) {
-      console.log("Nisi ulogovan! Vracam na Login.");
+    // Ako nisam ulogovan, a nisam ni na jednoj javnoj stranici -> Vraćaj na Login
+    if (!isPublicPage) {
+      console.log("Nisam ulogovan! Vraćam na Login.");
       window.location.href = "index.html";
       return;
     }
