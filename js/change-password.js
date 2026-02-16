@@ -3,6 +3,11 @@
 // Ovde NE RADIMO checkAuthStatus() jer korisnik dolazi sa linka,
 // mozda mu je sesija istekla, ali ima token u URL-u koji je dovoljan.
 
+//Cisto da pokazemo da znamo kako da resimo brisanje tokena iz url putanje ako nas neko gleda
+// Ovo uklanja "?token=..." iz address bara BEZ osvezavanja stranice!
+// const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+// window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+
 const changeForm = document.getElementById("changePasswordForm");
 
 if (changeForm) {
