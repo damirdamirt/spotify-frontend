@@ -46,13 +46,15 @@ function checkAuthStatus() {
   const isVerifyPage = fullUrl.includes("verify.html");
   const isForgotPasswordPage = fullUrl.includes("forgot-password.html");
   const isMagicLoginPage = fullUrl.includes("magic-login.html");
+  const isChangePassPage = fullUrl.includes("change-password.html");
 
   const isPublicPage =
     isLoginPage ||
     isRegisterPage ||
     isVerifyPage ||
     isForgotPasswordPage ||
-    isMagicLoginPage;
+    isMagicLoginPage ||
+    isChangePassPage;
 
   // SCENARIO 1: Ulogovan sam (imam token)
   if (token) {

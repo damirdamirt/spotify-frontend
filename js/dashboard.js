@@ -57,3 +57,51 @@ async function testSecureData() {
 document.addEventListener("DOMContentLoaded", () => {
   testSecureData();
 });
+
+const changePassBtn = document.getElementById("changePassBtn");
+
+if (changePassBtn) {
+  changePassBtn.addEventListener("click", async () => {
+    const username = localStorage.getItem("spotify_user");
+
+    if (!username) {
+      alert("Error: User not found. Please login again.");
+      logout();
+      return;
+    }
+
+    // Onemoguci dugme da ne klikce 100 puta
+    changePassBtn.disabled = true;
+    changePassBtn.innerText = "Sending...";
+
+    try {
+      // Backend endpoint: /api/auth/change-password-initiate
+      // DTO trazi: { "username": "..." }
+      const response = await fetch(`${API_URL}/password-change/initiate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username }),
+      });
+
+      if (response.ok) {
+        alert("Email sent! Check your inbox to finish password change.");
+      } else {
+        const msg = await response.text();
+        // Provera da li je JSON greska
+        let cleanMsg = msg;
+        try {
+          cleanMsg = JSON.parse(msg).error || msg;
+        } catch (e) {}
+
+        alert("Error: " + cleanMsg);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server unreachable.");
+    } finally {
+      // Vrati dugme u normalu
+      changePassBtn.disabled = false;
+      changePassBtn.innerText = "Change Password";
+    }
+  });
+}
