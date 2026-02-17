@@ -88,6 +88,7 @@ if (otpForm) {
         // Cuvamo Token
         localStorage.setItem("spotify_token", data.accessToken);
         localStorage.setItem("spotify_user", tempUsername);
+        localStorage.setItem("user_roles", JSON.stringify(data.roles));
 
         showAlert("Success! Redirecting...", "success");
 

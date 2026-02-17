@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // 3. Sacuvaj JWT i Username
       localStorage.setItem("spotify_token", data.accessToken);
+      localStorage.setItem("user_roles", JSON.stringify(data.roles));
 
       // Ako backend ne vrati username, stavljamo genericno,
       // ali tvoj backend verovatno vraca DTO sa username-om

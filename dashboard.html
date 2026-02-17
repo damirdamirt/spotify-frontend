@@ -27,37 +27,89 @@
         </button>
       </div>
     </nav>
+    <div
+      id="admin-section"
+      style="
+        display: none;
+        background-color: #282828;
+        padding: 20px;
+        margin: 20px;
+        border-radius: 8px;
+        border: 1px solid #1db954;
+      "
+    >
+      <h2 style="color: #1db954">👨‍💻 Admin Panel - Upload Album</h2>
 
-    <div class="container mt-5">
-      <div class="row">
-        <div class="col-md-12">
-          <h1 class="text-white mb-4">Dashboard</h1>
-
-          <div class="card bg-dark text-white border-secondary mb-4">
-            <div class="card-header border-secondary">
-              Backend Connection Test
-            </div>
-            <div class="card-body">
-              <h5 class="card-title">Secured Data from Spring Boot</h5>
-              <p class="card-text text-muted">
-                Testing endpoint: <code>/api/demo</code>
-              </p>
-
-              <div id="backendResponse" class="alert alert-secondary">
-                Waiting for JS...
-              </div>
-
-              <button onclick="testSecureData()" class="btn btn-success btn-sm">
-                Refresh Data
-              </button>
-            </div>
-          </div>
-
-          <div class="text-white">
-            <p>More content coming soon...</p>
-          </div>
+      <form
+        id="create-album-form"
+        style="
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          max-width: 500px;
+        "
+      >
+        <div class="form-group">
+          <label style="color: white">Select Artist:</label>
+          <select
+            id="artist-select"
+            required
+            style="padding: 10px; border-radius: 4px"
+          >
+            <option value="">Loading artists...</option>
+          </select>
         </div>
-      </div>
+
+        <div class="form-group">
+          <label style="color: white">Album Title:</label>
+          <input
+            type="text"
+            id="album-title"
+            placeholder="e.g. After Hours"
+            required
+            style="padding: 10px; border-radius: 4px; width: 100%"
+          />
+        </div>
+
+        <div class="form-group">
+          <label style="color: white">Release Year:</label>
+          <input
+            type="number"
+            id="release-year"
+            placeholder="2024"
+            required
+            style="padding: 10px; border-radius: 4px; width: 100%"
+          />
+        </div>
+
+        <div class="form-group">
+          <label style="color: white">Cover Image:</label>
+          <input
+            type="file"
+            id="album-cover"
+            accept="image/*"
+            required
+            style="color: white"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          style="
+            background-color: #1db954;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+          "
+        >
+          Upload Album 🚀
+        </button>
+      </form>
+      <p id="upload-message" style="margin-top: 15px; font-weight: bold"></p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

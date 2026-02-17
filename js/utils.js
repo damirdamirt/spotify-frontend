@@ -121,7 +121,7 @@ async function fetchWithAuth(endpoint, options) {
 
   // 5. POZIVANJE PRAVOG FETCH-A
   try {
-    // Spajamo osnovni URL i endpoint (npr. "http://localhost:8080/api" + "/demo")
+    // Spajamo osnovni URL i endpoint (npr. "https://localhost:8443/api" + "/demo")
     const fullUrl = BASE_URL + endpoint;
 
     console.log("Saljem zahtev na:", fullUrl);
